@@ -1,0 +1,68 @@
+:root {
+  /* brand */
+  --primary: #16A34A;
+  --primary-600: #16A34A;
+  --primary-500: #22C55E;
+  --primary-700: #14532D;
+
+  --secondary: #2563EB;
+  --secondary-600: #2563EB;
+  --secondary-500: #3B82F6;
+  --secondary-700: #1D4ED8;
+
+  /* neutrals */
+  --bg: #FFFFFF;
+  --surface: #F1F5F9;
+  --muted: #E2E8F0;
+  --text: #0F172A;
+  --text-muted: #334155;
+
+  /* feedback */
+  --success: #16A34A;
+  --warning: #F59E0B;
+  --error: #DC2626;
+  --info: #0284C7;
+
+  /* extras */
+  --ring: rgba(37, 99, 235, 0.35);
+  --shadow: 0 8px 24px rgba(2, 6, 23, 0.08);
+  --radius: 12px;
+}
+
+
+/* - Buttons: use background var with hover and focus rings.[1] */
+
+.btn {
+  background: var(--primary);
+  color: #fff;
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  box-shadow: var(--shadow);
+  transition: .2s ease;
+}
+.btn:hover { background: var(--primary-500); }
+.btn:focus { outline: 3px solid var(--ring); outline-offset: 2px; }
+
+.link { color: var(--secondary); }
+.link:hover { color: var(--secondary-500); }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--muted);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.text-muted { color: var(--text-muted); }
+
+
+ /* Enable with [data-theme="dark"] on html tag.[1] */
+
+html[data-theme="dark"] {
+  --bg: #0B1220;
+  --surface: #0F172A;
+  --muted: #1E293B;
+  --text: #E5E7EB;
+  --text-muted: #94A3B8;
+  --shadow: 0 8px 24px rgba(0,0,0,0.35);
+}

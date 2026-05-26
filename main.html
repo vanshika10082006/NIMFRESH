@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NIMFRESH - Expiry Tracking & Donation System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Authentication Screen -->
+    <div id="auth-screen" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <div class="logo-fixed">
+                        <img src="Main logo.png" alt="Nimfresh Logo" style="height:100px; width:auto;" />
+                    </div>
+                <h2 class="brand-title">NIMFRESH</h2>
+                <p class="auth-subtitle">Welcome back! Sign in to your account</p>
+            </div>
+
+            <form id="auth-form" class="auth-form">
+                <div id="name-field" class="form-group" style="display: none;">
+                    <label>User Name</label>
+                    <div class="input-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="name" placeholder="Enter your User name">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <div class="input-group">
+                        <i class="fas fa-envelope"></i>
+                        <input type="email" id="email" placeholder="Enter your email" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="input-group">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="password" placeholder="Enter your password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword()">
+                            <i class="fas fa-"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="user-type-field" class="form-group" style="display: none;">
+                    <label>Account Type</label>
+                    <div class="user-type-grid">
+                        <button type="button" class="user-type-btn active" data-type="individual">
+                            <i class="fas fa-user"></i>
+                            <span>Individual</span>
+                        </button>
+                        <button type="button" class="user-type-btn" data-type="organization">
+                            <i class="fas fa-building"></i>
+                            <span>Organization</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-btn" id="auth-submit">
+                    <span id="auth-btn-text">Sign In</span>
+                    <div id="auth-loading" class="loading-spinner" style="display: none;"></div>
+                </button>
+            </form>
+
+            <div class="auth-switch">
+                <button type="button" id="auth-toggle" onclick="toggleAuthMode()">
+                    Don't have an account? Sign up
+                </button>
+            </div>
+
+            <div class="auth-footer">
+                <p>By continuing, you agree to our Terms of Service and Privacy Policy</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Application -->
+    <div id="main-app" class="main-app" style="display: none;">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <div class="logo-fixed">
+                        <img src="Main logo.png" alt="Nimfresh Logo" style="height:80px; width:auto;" />
+                    </div>
+                    <h1 class="brand-title">NIMFRESH</h1>
+                </div>
+
+                <div class="header-right">
+                    <button class="notification-btn" onclick="toggleNotifications()">
+                        <i class="fas fa-bell"></i>
+                        <span id="notification-count" class="notification-badge" style="display: none;">0</span>
+                    </button>
+
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span id="user-name">User</span>
+                    </div>
+
+                    <button class="logout-btn" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Navigation -->
+        <nav class="app-nav">
+            <div class="nav-content">
+                <button class="nav-btn active" data-view="dashboard" onclick="switchView('dashboard')">
+                    Dashboard
+                </button>
+                <button class="nav-btn" data-view="inventory" onclick="switchView('inventory')">
+                    Inventory
+                </button>
+                <button class="nav-btn" data-view="donations" onclick="switchView('donations')">
+                    Donations
+                </button>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="app-main">
+            <!-- Dashboard View -->
+            <div id="dashboard-view" class="view active">
+                <div class="welcome-section">
+                    <h2>Welcome to NIMFRESH!</h2>
+                    <p>Track your grocery and medicine expiries, reduce waste, and help your community.</p>
+                    <div class="welcome-actions">
+                        <button class="btn btn-primary" onclick="showAddProduct()">
+                            <i class="fas fa-plus"></i>
+                            Add Your First Item
+                        </button>
+                        <button class="btn btn-secondary" onclick="switchView('inventory')">
+                            View Inventory
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-blue">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-items">0</h3>
+                            <p>Total Items</p>
+                            <span class="stat-trend">+12% from last month</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-red">
+                            <i class="fas fa-exclamation-triangle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="expired-items">0</h3>
+                            <p>Expired</p>
+                            <span class="stat-trend" id="expired-trend">All good!</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-orange">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="expiring-items">0</h3>
+                            <p>Expiring Soon</p>
+                            <span class="stat-trend">Within 7 days</span>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-green">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="fresh-items">0</h3>
+                            <p>Fresh Items</p>
+                            <span class="stat-trend">Good condition</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-content">
+                    <div class="quick-actions">
+                        <h3>Quick Actions</h3>
+                        <div class="action-cards">
+                            <button class="action-card" onclick="showAddProduct()">
+                                <div class="action-icon bg-green">
+                                    <i class="fas fa-plus"></i>
+                                </div>
+                                <div class="action-content">
+                                    <h4>Add New Item</h4>
+                                    <p>Manually add or scan barcode</p>
+                                </div>
+                            </button>
+                            <button class="action-card" onclick="switchView('inventory')">
+                                <div class="action-icon bg-blue">
+                                    <i class="fas fa-box"></i>
+                                </div>
+                                <div class="action-content">
+                                    <h4>View Inventory</h4>
+                                    <p>Manage all your items</p>
+                                </div>
+                            </button>
+                            <button class="action-card" onclick="switchView('donations')">
+                                <div class="action-icon bg-pink">
+                                    <i class="fas fa-heart"></i>
+                                </div>
+                                <div class="action-content">
+                                    <h4>Donation Center</h4>
+                                    <p>Share expiring items</p>
+                                </div>
+                            </button>
+                            <button class="action-card">
+                                <div class="action-icon bg-purple">
+                                    <i class="fas fa-chart-bar"></i>
+                                </div>
+                                <div class="action-content">
+                                    <h4>Analytics</h4>
+                                    <p>View usage insights</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="recent-items">
+                        <div class="section-header">
+                            <h3>Recent Items</h3>
+                            <button class="link-btn" onclick="switchView('inventory')">View All →</button>
+                        </div>
+                        <div id="recent-items-content">
+                            <div class="empty-state">
+                                <i class="fas fa-box"></i>
+                                <h4>No Items Yet</h4>
+                                <p>Start by adding your first grocery or medicine item</p>
+                                <button class="btn btn-primary" onclick="showAddProduct()">Add Item</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Inventory View -->
+            <div id="inventory-view" class="view">
+                <div class="view-header">
+                    <div>
+                        <h2>Inventory Management</h2>
+                        <p>Manage all your tracked items</p>
+                    </div>
+                    <div class="item-count">
+                        <span id="inventory-count">0 items</span>
+                    </div>
+                </div>
+
+                <div class="filters-section">
+                    <div class="filters-grid">
+                        <div class="filter-group">
+                            <label>Search Items</label>
+                            <div class="input-group">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="search-input" placeholder="Search by name or brand">
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>Category</label>
+                            <select id="category-filter">
+                                <option value="all">All Categories</option>
+                                <option value="grocery">Grocery</option>
+                                <option value="medicine">Medicine</option>
+                                <option value="dairy">Dairy</option>
+                                <option value="vegetables">Vegetables</option>
+                                <option value="fruits">Fruits</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Status</label>
+                            <select id="status-filter">
+                                <option value="all">All Status</option>
+                                <option value="fresh">Fresh</option>
+                                <option value="expiring-soon">Expiring Soon</option>
+                                <option value="expired">Expired</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Sort By</label>
+                            <select id="sort-filter">
+                                <option value="expiry">Expiry Date</option>
+                                <option value="name">Product Name</option>
+                                <option value="added">Date Added</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="inventory-content">
+                    <div class="empty-state">
+                        <i class="fas fa-box"></i>
+                        <h3>No Items Found</h3>
+                        <p>Start by adding your first item to track its expiry</p>
+                        <button class="btn btn-primary" onclick="showAddProduct()">Add Item</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Donations View -->
+            <div id="donations-view" class="view">
+                <div class="donations-header">
+                    <div class="donations-hero">
+                        <div class="hero-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h2>Donation Center</h2>
+                        <p>Help reduce food waste by donating items to local NGOs and community centers. Your donations
+                            can make a real difference in someone's life.</p>
+                    </div>
+                </div>
+
+                <div class="donation-stats">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-pink">
+                            <i class="fas fa-box"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="available-donations">0</h3>
+                            <p>Items Available</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-green">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="total-donations">0</h3>
+                            <p>Total Donations</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon bg-blue">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3>3</h3>
+                            <p>Partner NGOs</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="donations-content">
+                    <div class="donation-section">
+                        <div class="section-header">
+                            <h3>Items Available for Donation</h3>
+                            <button id="create-donation-btn" class="btn btn-primary" onclick="showDonationForm()"
+                                style="display: none;">
+                                Create Donation
+                            </button>
+                        </div>
+                        <div id="donation-items">
+                            <div class="empty-state">
+                                <i class="fas fa-box"></i>
+                                <h4>No Items Ready for Donation</h4>
+                                <p>Items expiring soon will appear here automatically</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="ngo-section">
+                        <h3>NGO Partners</h3>
+                        <div class="ngo-list">
+                            <div class="ngo-card">
+                                <div class="ngo-info">
+                                    <div class="ngo-header">
+                                        <h4>Food Bank Community Center</h4>
+                                        <i class="fas fa-check-circle verified"></i>
+                                    </div>
+                                    <p class="ngo-type">Food Bank</p>
+                                    <div class="ngo-details">
+                                        <div class="detail-item">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span>Downtown, Mumbai</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-phone"></i>
+                                            <span>+91 98765 43210</span>
+                                        </div>
+                                    </div>
+                                    <div class="ngo-accepts">
+                                        <span>Accepts: grocery, canned, beverages</span>
+                                    </div>
+                                </div>
+                                <div class="ngo-rating">
+                                    <span>★ 4.8</span>
+                                </div>
+                            </div>
+
+                            <div class="ngo-card">
+                                <div class="ngo-info">
+                                    <div class="ngo-header">
+                                        <h4>City Health Mission</h4>
+                                        <i class="fas fa-check-circle verified"></i>
+                                    </div>
+                                    <p class="ngo-type">Healthcare NGO</p>
+                                    <div class="ngo-details">
+                                        <div class="detail-item">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span>Bandra, Mumbai</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-phone"></i>
+                                            <span>+91 98765 43211</span>
+                                        </div>
+                                    </div>
+                                    <div class="ngo-accepts">
+                                        <span>Accepts: medicine, healthcare</span>
+                                    </div>
+                                </div>
+                                <div class="ngo-rating">
+                                    <span>★ 4.9</span>
+                                </div>
+                            </div>
+
+                            <div class="ngo-card">
+                                <div class="ngo-info">
+                                    <div class="ngo-header">
+                                        <h4>Hope Foundation</h4>
+                                        <i class="fas fa-check-circle verified"></i>
+                                    </div>
+                                    <p class="ngo-type">Community Support</p>
+                                    <div class="ngo-details">
+                                        <div class="detail-item">
+                                            <i class="fas fa-map-marker-alt"></i>
+                                            <span>Andheri, Mumbai</span>
+                                        </div>
+                                        <div class="detail-item">
+                                            <i class="fas fa-phone"></i>
+                                            <span>+91 98765 43212</span>
+                                        </div>
+                                    </div>
+                                    <div class="ngo-accepts">
+                                        <span>Accepts: grocery, dairy, fruits, vegetables</span>
+                                    </div>
+                                </div>
+                                <div class="ngo-rating">
+                                    <span>★ 4.7</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="recent-donations" class="recent-donations" style="display: none;">
+                    <h3>Recent Donations</h3>
+                    <div id="donations-list"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add Product Modal -->
+    <div id="add-product-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Item</h2>
+                <button class="close-btn" onclick="hideAddProduct()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+
+            <div class="modal-body">
+                <div class="input-methods">
+                    <h3>Choose Input Method</h3>
+                    <div class="method-grid">
+                        <button class="method-btn active" data-method="manual">
+                            <i class="fas fa-keyboard"></i>
+                            <h4>Manual Entry</h4>
+                            <p>Type product details</p>
+                        </button>
+                        <button class="method-btn" data-method="barcode">
+                            <i class="fas fa-barcode"></i>
+                            <h4>Barcode Scan</h4>
+                            <p>Use device camera</p>
+                        </button>
+                        <button class="method-btn disabled" data-method="rfid">
+                            <i class="fas fa-wifi"></i>
+                            <h4>RFID Scan</h4>
+                            <p>Coming soon</p>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="barcode-scanner" class="barcode-section" style="display: none;">
+                    <div class="scanner-area">
+                        <div class="scanner-frame">
+                            <i class="fas fa-camera"></i>
+                            <div id="scanning-indicator" style="display: none;">
+                                <div class="loading-spinner"></div>
+                                <p>Scanning...</p>
+                            </div>
+                        </div>
+                        <button id="start-scan-btn" class="btn btn-primary" onclick="simulateBarcodeScan()">
+                            Start Barcode Scan
+                        </button>
+                        <p>Point your camera at the product barcode</p>
+                    </div>
+                </div>
+
+                <form id="product-form" class="product-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Product Name *</label>
+                            <input type="text" id="product-name" placeholder="Enter product name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Brand</label>
+                            <input type="text" id="product-brand" placeholder="Enter brand name">
+                        </div>
+                        <div class="form-group">
+                            <label>Category *</label>
+                            <select id="product-category" required>
+                                <option value="grocery">Grocery</option>
+                                <option value="medicine">Medicine</option>
+                                <option value="dairy">Dairy</option>
+                                <option value="vegetables">Vegetables</option>
+                                <option value="fruits">Fruits</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Expiry Date *</label>
+                            <input type="date" id="product-expiry" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Quantity</label>
+                            <div class="quantity-group">
+                                <input type="number" id="product-quantity" value="1" min="1">
+                                <select id="product-unit">
+                                    <option value="pieces">pieces</option>
+                                    <option value="kg">kg</option>
+                                    <option value="liters">liters</option>
+                                    <option value="bottles">bottles</option>
+                                    <option value="packets">packets</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Storage Location</label>
+                            <select id="product-location">
+                                <option value="pantry">Pantry</option>
+                                <option value="freezer">Freezer</option>
+                                <option value="medicine cabinet">Medicine Cabinet</option>
+                                <option value="kitchen cabinet">Kitchen Cabinet</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="hideAddProduct()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Save Item
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notifications Panel -->
+    <div id="notifications-panel" class="notifications-panel">
+        <div class="notifications-header">
+            <div class="notifications-title">
+                <div class="notification-icon">
+                    <i class="fas fa-bell"></i>
+                </div>
+                <div>
+                    <h3>Notifications</h3>
+                    <p id="notification-status">All caught up!</p>
+                </div>
+            </div>
+            <div class="notifications-actions">
+                <button id="mark-all-read" class="link-btn" onclick="markAllNotificationsRead()" style="display: none;">
+                    Mark all read
+                </button>
+                <button class="close-btn" onclick="toggleNotifications()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+        <div class="notifications-content">
+            <div id="notifications-list">
+                <div class="empty-notifications">
+                    <i class="fas fa-bell"></i>
+                    <h4>No Notifications</h4>
+                    <p>You'll receive notifications about expiring items and donation updates here.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Donation Form Modal -->
+    <div id="donation-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create Donation Request</h2>
+                <button class="close-btn" onclick="hideDonationForm()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="donation-form-content">
+                    <div class="form-section">
+                        <h4>Selected Items (<span id="selected-items-count">0</span>)</h4>
+                        <p>Choose the items you want to donate from the available list.</p>
+                    </div>
+                    <div class="form-section">
+                        <h4>Selected NGO</h4>
+                        <p id="selected-ngo-name">Please select an NGO from the list.</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Message (Optional)</label>
+                        <textarea id="donation-message" placeholder="Add a message for the NGO about your donation..."
+                            rows="4"></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="hideDonationForm()">Cancel</button>
+                        <button type="button" class="btn btn-primary" onclick="createDonation()" disabled>
+                            <i class="fas fa-paper-plane"></i>
+                            Create Donation
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+
+</html>

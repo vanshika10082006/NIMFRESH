@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nimfresh Onboarding</title>
+    <link rel="stylesheet" href="main.css" />
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-fixed {
+            position: fixed;
+            top: 24px;
+            left: 32px;
+            z-index: 1100;
+        }
+
+        .onboarding-wrapper {
+            text-align: center;
+            max-width: 700px;
+            padding: 40px 20px;
+            align-content: center;
+            height: 400px;
+        }
+
+        .slide-indicators {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 90px;
+        }
+
+        .indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #bfbfbf;
+        }
+
+        .indicator.active {
+            background: linear-gradient(90deg, #00b894, #0984e3);
+        }
+
+        .slide-heading {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2e8b57;
+            margin-bottom: 16px;
+        }
+
+        .slide-desc {
+            font-size: 1.1rem;
+            color: #fff;
+            margin-bottom: 24px;
+        }
+
+        #slide-content {
+            transition: opacity 0.4s ease;
+        }
+
+        .window-buttons,
+        .prev-window-button {
+            position: fixed;
+            bottom: 32px;
+            display: flex;
+            gap: 16px;
+        }
+
+        .window-buttons {
+            right: 32px;
+        }
+
+        .prev-window-button {
+            left: 32px;
+        }
+
+        .onboard-btn {
+            background: linear-gradient(90deg, #00b894, #0984e3);
+            /* main button gradient */
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 28px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: opacity 0.2s ease;
+            touch-action: manipulation;
+        }
+
+        .onboard-btn.skip {
+            background: linear-gradient(90deg, #66d1b5, #6fb8f0);
+            /* lighter gradient */
+            color: #fff;
+            opacity: .9;
+        }
+
+        .onboard-btn:hover,
+        .onboard-btn.skip:hover {
+            opacity: 0.85;
+            /* subtle fade on hover */
+        }
+
+        .onboard-btn.skip:hover {
+            opacity: 1;
+        }
+
+
+
+        @media (max-width: 700px) {
+
+            .window-buttons,
+            .prev-window-button {
+                flex-direction: column;
+                gap: 12px;
+                bottom: 16px;
+            }
+
+            .window-buttons {
+                right: 16px;
+            }
+
+            .prev-window-button {
+                left: 16px;
+            }
+
+            .logo-fixed {
+                top: 12px;
+                left: 12px;
+            }
+        }
+
+
+
+        /* updated */
+        /* Background like login page */
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #d1fae5 0%, #dbeafe 50%, #e0e7ff 100%);
+            /* green to blue */
+        }
+
+        /* White content box with shadow */
+        .onboarding-wrapper {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            /* same as login style */
+            padding: 40px 20px;
+            max-width: 600px;
+            width: 90%;
+            text-align: center;
+        }
+
+        /* Gradient text for NIMFRESH */
+        .nimfresh-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            background: linear-gradient(90deg, #00b894, #0984e3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 56px;
+        }
+
+        /* Other text in black */
+        .slide-heading {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #000;
+            /* black */
+            margin-bottom: 12px;
+            background: linear-gradient(90deg, #00b894, #0984e3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .slide-desc {
+            font-size: 1.1rem;
+            color: #000;
+            /* black */
+            margin-bottom: 24px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="logo-fixed">
+        <img src="Main logo.png" alt="Nimfresh Logo" style="height:75px; width:auto;" />
+    </div>
+
+    <div class="onboarding-wrapper">
+        <div class="nimfresh-title">NIMFRESH</div>
+
+        <div id="slide-content"></div>
+        <div class="slide-indicators"></div>
+    </div>
+
+
+    <div class="window-buttons">
+        <button class="onboard-btn skip" onclick="skipOnboarding()" aria-label="Skip onboarding">Skip</button>
+        <button class="onboard-btn" onclick="nextSlide()" id="nextBtn" aria-label="Next slide">Next</button>
+    </div>
+
+    <div class="prev-window-button" id="prevWindowBtn" style="display:none;">
+        <button class="onboard-btn" onclick="prevSlide()" aria-label="Previous slide">Previous</button>
+    </div>
+
+    <script>
+        const slides = [
+    {
+        heading: "WELCOME TO NIMFRESH",
+        desc: "Smart Grocery and Medicines management system"
+    },
+    {
+        heading: "Track Groceries Effortlessly",
+        desc: "Manage your grocery inventory, get expiry alerts, and shop smarter."
+    },
+    {
+        heading: "Manage Medicines Confidently",
+        desc: "Keep accurate stock, get timely expiry alerts, and never miss a refill."
+    },
+    {
+        heading: "Donation Support",
+        desc: "Donate near-expiry groceries and medicines to NGOs, reducing waste and supporting those in need."
+    },
+    {
+        heading: "You're All Set!",
+        desc: "Let’s get started with Nimfresh. Your smart assistant awaits."
+    }
+];
+
+
+        let currentSlide = 0;
+
+        function updateSlide() {
+            const content = document.getElementById('slide-content');
+            content.style.opacity = 0;
+            setTimeout(() => {
+                content.innerHTML = `
+                <div class='slide-heading'>${slides[currentSlide].heading}</div>
+                <div class='slide-desc'>${slides[currentSlide].desc}</div>
+            `;
+                content.style.opacity = 1;
+            }, 200);
+
+            // Update indicators dynamically
+            const indicatorsContainer = document.querySelector('.slide-indicators');
+            indicatorsContainer.innerHTML = slides.map((_, i) =>
+                `<div class="indicator ${i === currentSlide ? 'active' : ''}" id="ind${i + 1}"></div>`
+            ).join('');
+
+            document.getElementById('nextBtn').textContent = currentSlide === slides.length - 1 ? 'Finish' : 'Next';
+            document.getElementById('prevWindowBtn').style.display = currentSlide > 0 ? 'block' : 'none';
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                currentSlide++;
+                updateSlide();
+            } else {
+                window.location.href = 'main.html';
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                currentSlide--;
+                updateSlide();
+            }
+        }
+
+        function skipOnboarding() {
+            window.location.href = 'main.html';
+        }
+
+        updateSlide();
+    </script>
+
+</body>
+
+
+</html>
